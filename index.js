@@ -4,6 +4,7 @@ var https = require('https');
 var EventEmitter = require('events').EventEmitter;
 var mixin = require('merge-descriptors');
 var Timer = require('./timer');
+//var agentBase = require('agent-base');
 
 // TODO: Try to support these standards...
 // PerformanceResourceTiming: https://developer.mozilla.org/en-US/docs/Web/API/PerformanceResourceTiming
@@ -62,14 +63,26 @@ exports.wrap = function createHttp(httpModule) {
     return uri;
   }
 
+  function getIdent(socket) {
+    return {
+      date: Date.now(),
+      //address: [socket.localAddress, socket.remoteAddress],
+      //port: [socket.localPort, socket.remotePort],
+      local: [socket.localAddress, socket.localPort],
+      remote: [socket.remoteAddress, socket.remotePort],
+    };
+  }
+
   function setupTimerForRequest (timer, req, uri) {
     hookCallback(req, 'end', timer.mark.bind(timer, 'sent'));
 
     //req.socket.on('abort', timer.mark.bind(timer, 'abort')); // ?
 
-
     req.on('socket', (socket) => {
       timer.mark('socket');
+
+      //console.log('socket.agent');
+      //console.log(socket.address());
       // Keep-Alive
       var alreadyConnected = !(socket._connecting || socket.connecting);
       if (!alreadyConnected) {
@@ -79,18 +92,17 @@ exports.wrap = function createHttp(httpModule) {
       }
       //req.socket.once('data', timer.mark.bind(timer, 'response'));
 
+      req.socket.on('error', () => {
+        console.log('ERR');
+      });
+
+      timer.ident = getIdent(socket);
+
       req.socket.on('connect', () => {
         // _sockname: { address: '192.168.1.83', family: 'IPv4', port: 53028 }
         // _peername: { address: '172.217.17.78', family: 'IPv4', port: 443 } }
-        var ident = {
-          date: Date.now(),
-          //address: [socket.localAddress, socket.remoteAddress],
-          //port: [socket.localPort, socket.remotePort],
-          local: [socket.localAddress, socket.localPort],
-          remote: [socket.remoteAddress, socket.remotePort],
-        };
-        MeasureHttp.emit('socket-connect', ident);
-        //console.log(ident);
+        timer.ident = getIdent(socket);
+        MeasureHttp.emit('socket-connect', timer.ident);
       });
 
       /*

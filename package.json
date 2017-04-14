@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "agent-base": "^2.0.1",
     "merge-descriptors": "^1.0.1"
   }
 }

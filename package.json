@@ -1,6 +1,6 @@
 {
   "name": "http-measurement-agent",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "http and https agent extensions for timing metrics collection",
   "author": "NetBlocks Team <team@netblocks.org>",
   "homepage": "https://netblocks.org/",

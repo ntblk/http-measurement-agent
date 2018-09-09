@@ -1,8 +1,18 @@
 {
-  "name": "http-metrics",
-  "version": "1.0.0",
+  "name": "http-measurement-agent",
+  "version": "1.2.0",
+  "description": "http and https agent extensions for timing metrics collection",
+  "author": "NetBlocks Team <team@netblocks.org>",
+  "homepage": "https://netblocks.org/",
   "main": "index.js",
   "license": "MIT",
+  "keywords": [
+    "measurement",
+    "timing",
+    "network",
+    "http",
+    "performance"
+  ],
   "dependencies": {
     "agent-base": "^2.0.1",
     "merge-descriptors": "^1.0.1"
